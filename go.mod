@@ -1,4 +1,4 @@
-module github.com/crossplane/function-template-go
+module github.com/crossplane/user-s3-arn
 
 go 1.23
 
