@@ -8,6 +8,7 @@ import (
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"google.golang.org/protobuf/testing/protocmp"
 	"google.golang.org/protobuf/types/known/durationpb"
+	"google.golang.org/protobuf/types/known/structpb"
 
 	"github.com/crossplane/function-sdk-go/logging"
 	fnv1 "github.com/crossplane/function-sdk-go/proto/v1"
@@ -25,6 +26,7 @@ func TestRunFunction(t *testing.T) {
 		rsp *fnv1.RunFunctionResponse
 		err error
 	}
+	ctx, _ := structpb.NewStruct(map[string]any{FunctionContextKeyS3UserARN: map[string]any{}})
 
 	cases := map[string]struct {
 		reason string
@@ -37,19 +39,19 @@ func TestRunFunction(t *testing.T) {
 				req: &fnv1.RunFunctionRequest{
 					Meta: &fnv1.RequestMeta{Tag: "hello"},
 					Input: resource.MustStructJSON(`{
-						"apiVersion": "template.fn.crossplane.io/v1beta1",
-						"kind": "Input",
-						"example": "Hello, world"
+						"apiVersion": "s3-user-arn.fn.crossplane.io/v1alpha1",
+						"kind": "Input"
 					}`),
 				},
 			},
 			want: want{
 				rsp: &fnv1.RunFunctionResponse{
 					Meta: &fnv1.ResponseMeta{Tag: "hello", Ttl: durationpb.New(response.DefaultTTL)},
+					Context: ctx,
 					Results: []*fnv1.Result{
 						{
 							Severity: fnv1.Severity_SEVERITY_NORMAL,
-							Message:  "I was run with input \"Hello, world\"!",
+							Message:  "",
 							Target:   fnv1.Target_TARGET_COMPOSITE.Enum(),
 						},
 					},
