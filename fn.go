@@ -11,6 +11,7 @@ import (
 	"github.com/crossplane/function-sdk-go/logging"
 	fnv1 "github.com/crossplane/function-sdk-go/proto/v1"
 	"github.com/crossplane/function-sdk-go/request"
+	"github.com/crossplane/function-sdk-go/resource"
 	"github.com/crossplane/function-sdk-go/response"
 	"github.com/crossplane/user-s3-arn/input/v1alpha1"
 )
@@ -54,10 +55,43 @@ func (f *Function) RunFunction(_ context.Context, req *fnv1.RunFunctionRequest) 
 		return rsp, nil
 	}
 
-	data := struct{}{}
-	b, err := json.Marshal(data)
+	// Get XR the pipeline targets.
+	oxr, err := request.GetObservedCompositeResource(req)
 	if err != nil {
-		response.Fatal(rsp, errors.Errorf("cannot marshal %T: %w", data, err))
+		response.Fatal(rsp, errors.Errorf("cannot get observed composite resource: %w", err))
+		return rsp, nil
+	}
+
+	// Build extraResource Requests.
+	requirements, err := buildRequirements(in, oxr)
+	if err != nil {
+		response.Fatal(rsp, errors.Errorf("could not build extra resource requirements: %w", err))
+		return rsp, nil
+	}
+	rsp.Requirements = requirements
+
+	// The request response cycle for the Crossplane ExtraResources API requires that function-extra-resources
+	// tells Crossplane what it wants.
+	// Then a new rquest is sent to function-extra-resources with those resources present at the ExtraResources field.
+	//
+	// function-extra-resources does not know if it has requested the resources already or not.
+	//
+	// If it has and these resources are now present, proceed with verification and conversion.
+	if req.ExtraResources == nil {
+		f.log.Debug("No extra resources present, exiting", "requirements", rsp.GetRequirements())
+		return rsp, nil
+	}
+
+	// Pull extra resources from the ExtraResources request field.
+	extraResources, err := request.GetExtraResources(req)
+	if err != nil {
+		response.Fatal(rsp, errors.Errorf("fetching extra resources %T: %w", req, err))
+		return rsp, nil
+	}
+
+	b, err := json.Marshal(extraResources)
+	if err != nil {
+		response.Fatal(rsp, errors.Errorf("cannot marshal %T: %w", extraResources, err))
 		return rsp, nil
 	}
 	s := &structpb.Struct{}
@@ -78,4 +112,32 @@ func (f *Function) RunFunction(_ context.Context, req *fnv1.RunFunctionRequest) 
 		TargetCompositeAndClaim()
 
 	return rsp, nil
+}
+
+// Build requirements takes input and outputs an array of external resoruce requirements to request
+// from Crossplane's external resource API.
+func buildRequirements(_ *v1alpha1.Input, xr *resource.Composite) (*fnv1.Requirements, error) {
+	extraResources := make(map[string]*fnv1.ResourceSelector)
+	spec := xr.Resource.Object["spec"].(map[string]any)
+	for _, permission := range spec["permissions"].([]any) {
+		for _, principal := range permission.(map[string]any)["principals"].([]any) {
+			user, ok := principal.(map[string]any)["user"]
+			if ok {
+				extraResources[user.(string)] = &fnv1.ResourceSelector{
+					ApiVersion: "iam.aws.upbound.io/v1beta1",
+					Kind:       "User",
+					Match: &fnv1.ResourceSelector_MatchLabels{
+						MatchLabels: &fnv1.MatchLabels{
+							Labels: map[string]string{
+								"crossplane.io/claim-name":      user.(string),
+								"crossplane.io/claim-namespace": xr.Resource.Unstructured.GetNamespace(),
+								"s3.statnett.no/account-name":   spec["accountRef"].(map[string]any)["name"].(string),
+							},
+						},
+					},
+				}
+			}
+		}
+	}
+	return &fnv1.Requirements{ExtraResources: extraResources}, nil
 }

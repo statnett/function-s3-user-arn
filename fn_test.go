@@ -42,6 +42,48 @@ func TestRunFunction(t *testing.T) {
 						"apiVersion": "s3-user-arn.fn.crossplane.io/v1alpha1",
 						"kind": "Input"
 					}`),
+					Observed: &fnv1.State{
+						Composite: &fnv1.Resource{
+							Resource: &structpb.Struct{
+								Fields: map[string]*structpb.Value{
+									"apiVersion": structpb.NewStringValue("s3-user-arn.fn.crossplane.io/v1alpha1"),
+									"kind":       structpb.NewStringValue("Input"),
+									"metadata": structpb.NewStructValue(&structpb.Struct{
+										Fields: map[string]*structpb.Value{
+											"name":      structpb.NewStringValue("test"),
+											"namespace": structpb.NewStringValue("test"),
+										},
+									}),
+									"spec": structpb.NewStructValue(&structpb.Struct{
+										Fields: map[string]*structpb.Value{
+											"accountRef": structpb.NewStructValue(&structpb.Struct{
+												Fields: map[string]*structpb.Value{
+													"name": structpb.NewStringValue("test"),
+												},
+											}),
+											"permissions": structpb.NewListValue(&structpb.ListValue{
+												Values: []*structpb.Value{
+													structpb.NewStructValue(&structpb.Struct{
+														Fields: map[string]*structpb.Value{
+															"principals": structpb.NewListValue(&structpb.ListValue{
+																Values: []*structpb.Value{
+																	structpb.NewStructValue(&structpb.Struct{
+																		Fields: map[string]*structpb.Value{
+																			"user": structpb.NewStringValue("test"),
+																		},
+																	}),
+																},
+															}),
+														},
+													}),
+												},
+											}),
+										},
+									}),
+								},
+							},
+						},
+					},
 				},
 			},
 			want: want{
