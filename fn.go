@@ -2,13 +2,22 @@ package main
 
 import (
 	"context"
+	"encoding/json"
+
+	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/types/known/structpb"
 
 	"github.com/crossplane/function-sdk-go/errors"
 	"github.com/crossplane/function-sdk-go/logging"
 	fnv1 "github.com/crossplane/function-sdk-go/proto/v1"
 	"github.com/crossplane/function-sdk-go/request"
 	"github.com/crossplane/function-sdk-go/response"
-	"github.com/crossplane/user-s3-arn/input/v1beta1"
+	"github.com/crossplane/user-s3-arn/input/v1alpha1"
+)
+
+// Key to retrieve extras at.
+const (
+	FunctionContextKeyS3UserARN = "s3-user-arn.fn.crossplane.io"
 )
 
 // Function returns whatever response you ask it to.
@@ -24,7 +33,7 @@ func (f *Function) RunFunction(_ context.Context, req *fnv1.RunFunctionRequest) 
 
 	rsp := response.To(req, response.DefaultTTL)
 
-	in := &v1beta1.Input{}
+	in := &v1alpha1.Input{}
 	if err := request.GetInput(req, in); err != nil {
 		// You can set a custom status condition on the claim. This allows you to
 		// communicate with the user. See the link below for status condition
@@ -45,9 +54,21 @@ func (f *Function) RunFunction(_ context.Context, req *fnv1.RunFunctionRequest) 
 		return rsp, nil
 	}
 
-	// TODO: Add your Function logic here!
-	response.Normalf(rsp, "I was run with input %q!", in.Example)
-	f.log.Info("I was run!", "input", in.Example)
+	data := struct{}{}
+	b, err := json.Marshal(data)
+	if err != nil {
+		response.Fatal(rsp, errors.Errorf("cannot marshal %T: %w", data, err))
+		return rsp, nil
+	}
+	s := &structpb.Struct{}
+	err = protojson.Unmarshal(b, s)
+	if err != nil {
+		response.Fatal(rsp, errors.Errorf("cannot unmarshal %T into %T: %w", b, s, err))
+		return rsp, nil
+	}
+	response.SetContextKey(rsp, FunctionContextKeyS3UserARN, structpb.NewStructValue(s))
+
+	response.Normalf(rsp, "")
 
 	// You can set a custom status condition on the claim. This allows you to
 	// communicate with the user. See the link below for status condition
