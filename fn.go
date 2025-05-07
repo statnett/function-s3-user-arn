@@ -4,14 +4,15 @@ import (
 	"context"
 	"encoding/json"
 
+	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/types/known/structpb"
+
 	"github.com/crossplane/function-sdk-go/errors"
 	"github.com/crossplane/function-sdk-go/logging"
 	fnv1 "github.com/crossplane/function-sdk-go/proto/v1"
 	"github.com/crossplane/function-sdk-go/request"
 	"github.com/crossplane/function-sdk-go/response"
 	"github.com/crossplane/user-s3-arn/input/v1alpha1"
-	"google.golang.org/protobuf/encoding/protojson"
-	"google.golang.org/protobuf/types/known/structpb"
 )
 
 // Key to retrieve extras at.
@@ -66,7 +67,7 @@ func (f *Function) RunFunction(_ context.Context, req *fnv1.RunFunctionRequest) 
 		return rsp, nil
 	}
 	response.SetContextKey(rsp, FunctionContextKeyS3UserARN, structpb.NewStructValue(s))
-	
+
 	response.Normalf(rsp, "")
 
 	// You can set a custom status condition on the claim. This allows you to
