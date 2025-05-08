@@ -6,6 +6,7 @@ import (
 
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/types/known/structpb"
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 
 	"github.com/crossplane/function-sdk-go/errors"
 	"github.com/crossplane/function-sdk-go/logging"
@@ -63,12 +64,7 @@ func (f *Function) RunFunction(_ context.Context, req *fnv1.RunFunctionRequest) 
 	}
 
 	// Build extraResource Requests.
-	requirements, err := buildRequirements(in, oxr)
-	if err != nil {
-		response.Fatal(rsp, errors.Errorf("could not build extra resource requirements: %w", err))
-		return rsp, nil
-	}
-	rsp.Requirements = requirements
+	rsp.Requirements = buildRequirements(in, oxr)
 
 	// The request response cycle for the Crossplane ExtraResources API requires that function-extra-resources
 	// tells Crossplane what it wants.
@@ -89,9 +85,18 @@ func (f *Function) RunFunction(_ context.Context, req *fnv1.RunFunctionRequest) 
 		return rsp, nil
 	}
 
-	b, err := json.Marshal(extraResources)
+	cleanedExtras := make(map[string][]unstructured.Unstructured, len(extraResources))
+	for k, r := range extraResources {
+		tmpExtra := make([]unstructured.Unstructured, 0, len(r))
+		for _, extra := range r {
+			tmpExtra = append(tmpExtra, *extra.Resource)
+		}
+		cleanedExtras[k] = tmpExtra
+	}
+
+	b, err := json.Marshal(cleanedExtras)
 	if err != nil {
-		response.Fatal(rsp, errors.Errorf("cannot marshal %T: %w", extraResources, err))
+		response.Fatal(rsp, errors.Errorf("cannot marshal %T: %w", cleanedExtras, err))
 		return rsp, nil
 	}
 	s := &structpb.Struct{}
@@ -116,7 +121,7 @@ func (f *Function) RunFunction(_ context.Context, req *fnv1.RunFunctionRequest) 
 
 // Build requirements takes input and outputs an array of external resoruce requirements to request
 // from Crossplane's external resource API.
-func buildRequirements(_ *v1alpha1.Input, xr *resource.Composite) (*fnv1.Requirements, error) {
+func buildRequirements(_ *v1alpha1.Input, xr *resource.Composite) *fnv1.Requirements {
 	extraResources := make(map[string]*fnv1.ResourceSelector)
 	spec := xr.Resource.Object["spec"].(map[string]any)
 	for _, permission := range spec["permissions"].([]any) {
@@ -139,5 +144,5 @@ func buildRequirements(_ *v1alpha1.Input, xr *resource.Composite) (*fnv1.Require
 			}
 		}
 	}
-	return &fnv1.Requirements{ExtraResources: extraResources}, nil
+	return &fnv1.Requirements{ExtraResources: extraResources}
 }

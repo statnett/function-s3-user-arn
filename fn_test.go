@@ -26,15 +26,14 @@ func TestRunFunction(t *testing.T) {
 		rsp *fnv1.RunFunctionResponse
 		err error
 	}
-	ctx, _ := structpb.NewStruct(map[string]any{FunctionContextKeyS3UserARN: map[string]any{}})
 
 	cases := map[string]struct {
 		reason string
 		args   args
 		want   want
 	}{
-		"ResponseIsReturned": {
-			reason: "The Function should return a fatal result if no input was specified",
+		"ExternalResourcesAreRequired": {
+			reason: "The Function requires more external resources",
 			args: args{
 				req: &fnv1.RunFunctionRequest{
 					Meta: &fnv1.RequestMeta{Tag: "hello"},
@@ -88,8 +87,162 @@ func TestRunFunction(t *testing.T) {
 			},
 			want: want{
 				rsp: &fnv1.RunFunctionResponse{
-					Meta:    &fnv1.ResponseMeta{Tag: "hello", Ttl: durationpb.New(response.DefaultTTL)},
-					Context: ctx,
+					Meta: &fnv1.ResponseMeta{Tag: "hello", Ttl: durationpb.New(response.DefaultTTL)},
+					Requirements: &fnv1.Requirements{
+						ExtraResources: map[string]*fnv1.ResourceSelector{
+							"test": {
+								ApiVersion: "iam.aws.upbound.io/v1beta1",
+								Kind:       "User",
+								Match: &fnv1.ResourceSelector_MatchLabels{
+									MatchLabels: &fnv1.MatchLabels{
+										Labels: map[string]string{
+											"crossplane.io/claim-name":      "test",
+											"crossplane.io/claim-namespace": "test",
+											"s3.statnett.no/account-name":   "test",
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		"ResponseIsReturned": {
+			reason: "The Function should return a successful result if sufficient resources are provided",
+			args: args{
+				req: &fnv1.RunFunctionRequest{
+					Meta: &fnv1.RequestMeta{Tag: "hello"},
+					Input: resource.MustStructJSON(`{
+						"apiVersion": "s3-user-arn.fn.crossplane.io/v1alpha1",
+						"kind": "Input"
+					}`),
+					Observed: &fnv1.State{
+						Composite: &fnv1.Resource{
+							Resource: &structpb.Struct{
+								Fields: map[string]*structpb.Value{
+									"apiVersion": structpb.NewStringValue("s3-user-arn.fn.crossplane.io/v1alpha1"),
+									"kind":       structpb.NewStringValue("Input"),
+									"metadata": structpb.NewStructValue(&structpb.Struct{
+										Fields: map[string]*structpb.Value{
+											"name":      structpb.NewStringValue("test"),
+											"namespace": structpb.NewStringValue("test"),
+										},
+									}),
+									"spec": structpb.NewStructValue(&structpb.Struct{
+										Fields: map[string]*structpb.Value{
+											"accountRef": structpb.NewStructValue(&structpb.Struct{
+												Fields: map[string]*structpb.Value{
+													"name": structpb.NewStringValue("test"),
+												},
+											}),
+											"permissions": structpb.NewListValue(&structpb.ListValue{
+												Values: []*structpb.Value{
+													structpb.NewStructValue(&structpb.Struct{
+														Fields: map[string]*structpb.Value{
+															"principals": structpb.NewListValue(&structpb.ListValue{
+																Values: []*structpb.Value{
+																	structpb.NewStructValue(&structpb.Struct{
+																		Fields: map[string]*structpb.Value{
+																			"user": structpb.NewStringValue("test"),
+																		},
+																	}),
+																},
+															}),
+														},
+													}),
+												},
+											}),
+										},
+									}),
+								},
+							},
+						},
+					},
+					ExtraResources: map[string]*fnv1.Resources{
+						"test": {
+							Items: []*fnv1.Resource{
+								{
+									Resource: &structpb.Struct{
+										Fields: map[string]*structpb.Value{
+											"apiVersion": structpb.NewStringValue("iam.aws.upbound.io/v1beta1"),
+											"kind":       structpb.NewStringValue("User"),
+											"metadata": structpb.NewStructValue(&structpb.Struct{
+												Fields: map[string]*structpb.Value{
+													"name":      structpb.NewStringValue("test"),
+													"namespace": structpb.NewStringValue("test"),
+												},
+											}),
+											"status": structpb.NewStructValue(&structpb.Struct{
+												Fields: map[string]*structpb.Value{
+													"forProvider": structpb.NewStructValue(&structpb.Struct{
+														Fields: map[string]*structpb.Value{
+															"arn": structpb.NewStringValue("test"),
+														},
+													}),
+												},
+											}),
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			want: want{
+				rsp: &fnv1.RunFunctionResponse{
+					Meta: &fnv1.ResponseMeta{Tag: "hello", Ttl: durationpb.New(response.DefaultTTL)},
+					Context: &structpb.Struct{
+						Fields: map[string]*structpb.Value{
+							FunctionContextKeyS3UserARN: structpb.NewStructValue(&structpb.Struct{
+								Fields: map[string]*structpb.Value{
+									"test": structpb.NewListValue(&structpb.ListValue{
+										Values: []*structpb.Value{
+											structpb.NewStructValue(&structpb.Struct{
+												Fields: map[string]*structpb.Value{
+													"apiVersion": structpb.NewStringValue("iam.aws.upbound.io/v1beta1"),
+													"kind":       structpb.NewStringValue("User"),
+													"metadata": structpb.NewStructValue(&structpb.Struct{
+														Fields: map[string]*structpb.Value{
+															"name":      structpb.NewStringValue("test"),
+															"namespace": structpb.NewStringValue("test"),
+														},
+													}),
+													"status": structpb.NewStructValue(&structpb.Struct{
+														Fields: map[string]*structpb.Value{
+															"forProvider": structpb.NewStructValue(&structpb.Struct{
+																Fields: map[string]*structpb.Value{
+																	"arn": structpb.NewStringValue("test"),
+																},
+															}),
+														},
+													}),
+												},
+											}),
+										},
+									}),
+								},
+							}),
+						},
+					},
+					Requirements: &fnv1.Requirements{
+						ExtraResources: map[string]*fnv1.ResourceSelector{
+							"test": {
+								ApiVersion: "iam.aws.upbound.io/v1beta1",
+								Kind:       "User",
+								Match: &fnv1.ResourceSelector_MatchLabels{
+									MatchLabels: &fnv1.MatchLabels{
+										Labels: map[string]string{
+											"crossplane.io/claim-name":      "test",
+											"crossplane.io/claim-namespace": "test",
+											"s3.statnett.no/account-name":   "test",
+										},
+									},
+								},
+							},
+						},
+					},
 					Results: []*fnv1.Result{
 						{
 							Severity: fnv1.Severity_SEVERITY_NORMAL,
