@@ -1,0 +1,13 @@
+---
+apiVersion: meta.pkg.crossplane.io/v1beta1
+kind: Function
+metadata:
+  annotations:
+    meta.crossplane.io/description: "a"
+    meta.crossplane.io/license: "a"
+    meta.crossplane.io/maintainer: "a"
+    meta.crossplane.io/readme: "a"
+    meta.crossplane.io/source: "a"
+  creationTimestamp: null
+  name: s3-user-arn
+spec: {}

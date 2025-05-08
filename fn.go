@@ -73,7 +73,7 @@ func (f *Function) RunFunction(_ context.Context, req *fnv1.RunFunctionRequest) 
 	// function-extra-resources does not know if it has requested the resources already or not.
 	//
 	// If it has and these resources are now present, proceed with verification and conversion.
-	if req.ExtraResources == nil {
+	if len(rsp.GetRequirements().GetExtraResources()) > 0 && req.ExtraResources == nil {
 		f.log.Debug("No extra resources present, exiting", "requirements", rsp.GetRequirements())
 		return rsp, nil
 	}
@@ -124,22 +124,25 @@ func (f *Function) RunFunction(_ context.Context, req *fnv1.RunFunctionRequest) 
 func buildRequirements(_ *v1alpha1.Input, xr *resource.Composite) *fnv1.Requirements {
 	extraResources := make(map[string]*fnv1.ResourceSelector)
 	spec := xr.Resource.Object["spec"].(map[string]any)
-	for _, permission := range spec["permissions"].([]any) {
-		for _, principal := range permission.(map[string]any)["principals"].([]any) {
-			user, ok := principal.(map[string]any)["user"]
-			if ok {
-				extraResources[user.(string)] = &fnv1.ResourceSelector{
-					ApiVersion: "iam.aws.upbound.io/v1beta1",
-					Kind:       "User",
-					Match: &fnv1.ResourceSelector_MatchLabels{
-						MatchLabels: &fnv1.MatchLabels{
-							Labels: map[string]string{
-								"crossplane.io/claim-name":      user.(string),
-								"crossplane.io/claim-namespace": xr.Resource.Unstructured.GetNamespace(),
-								"s3.statnett.no/account-name":   spec["accountRef"].(map[string]any)["name"].(string),
+	permissions, ok := spec["permissions"].([]any)
+	if ok {
+		for _, permission := range permissions {
+			for _, principal := range permission.(map[string]any)["principals"].([]any) {
+				user, ok := principal.(map[string]any)["user"]
+				if ok {
+					extraResources[user.(string)] = &fnv1.ResourceSelector{
+						ApiVersion: "iam.aws.upbound.io/v1beta1",
+						Kind:       "User",
+						Match: &fnv1.ResourceSelector_MatchLabels{
+							MatchLabels: &fnv1.MatchLabels{
+								Labels: map[string]string{
+									"crossplane.io/claim-name":      user.(string),
+									"crossplane.io/claim-namespace": xr.Resource.Unstructured.GetNamespace(),
+									"s3.statnett.no/account-name":   spec["accountRef"].(map[string]any)["name"].(string),
+								},
 							},
 						},
-					},
+					}
 				}
 			}
 		}
