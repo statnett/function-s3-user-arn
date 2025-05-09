@@ -137,7 +137,7 @@ func buildRequirements(_ *v1alpha1.Input, xr *resource.Composite) *fnv1.Requirem
 							MatchLabels: &fnv1.MatchLabels{
 								Labels: map[string]string{
 									"crossplane.io/claim-name":      user.(string),
-									"crossplane.io/claim-namespace": xr.Resource.Unstructured.GetNamespace(),
+									"crossplane.io/claim-namespace": xr.Resource.Unstructured.GetLabels()["crossplane.io/claim-namespace"],
 									"s3.statnett.no/account-name":   spec["accountRef"].(map[string]any)["name"].(string),
 								},
 							},
