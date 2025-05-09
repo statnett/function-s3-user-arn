@@ -121,13 +121,17 @@ func TestRunFunction(t *testing.T) {
 						Composite: &fnv1.Resource{
 							Resource: &structpb.Struct{
 								Fields: map[string]*structpb.Value{
-									"apiVersion": structpb.NewStringValue("s3-user-arn.fn.crossplane.io/v1alpha1"),
-									"kind":       structpb.NewStringValue("Input"),
+									"apiVersion": structpb.NewStringValue("s3.statnett.no/v1alpha1"),
+									"kind":       structpb.NewStringValue("Bucket"),
 									"metadata": structpb.NewStructValue(&structpb.Struct{
 										Fields: map[string]*structpb.Value{
 											"name":      structpb.NewStringValue("test"),
-											"namespace": structpb.NewStringValue("test"),
 										},
+										"labels": structpb.NewStructValue(&structpb.Struct{
+											Fields: map[string]*structpb.Value{
+												"crossplane.io/claim-namespace":      structpb.NewStringValue("test"),
+											},
+										}),
 									}),
 									"spec": structpb.NewStructValue(&structpb.Struct{
 										Fields: map[string]*structpb.Value{
