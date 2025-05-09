@@ -43,48 +43,30 @@ func TestRunFunction(t *testing.T) {
 					}`),
 					Observed: &fnv1.State{
 						Composite: &fnv1.Resource{
-							Resource: &structpb.Struct{
-								Fields: map[string]*structpb.Value{
-									"apiVersion": structpb.NewStringValue("s3-user-arn.fn.crossplane.io/v1alpha1"),
-									"kind":       structpb.NewStringValue("Input"),
-									"metadata": structpb.NewStructValue(&structpb.Struct{
-										Fields: map[string]*structpb.Value{
-											"name": structpb.NewStringValue("test"),
-											"labels": structpb.NewStructValue(&structpb.Struct{
-												Fields: map[string]*structpb.Value{
-													"crossplane.io/claim-namespace": structpb.NewStringValue("test"),
-												},
-											}),
-										},
-									}),
-									"spec": structpb.NewStructValue(&structpb.Struct{
-										Fields: map[string]*structpb.Value{
-											"accountRef": structpb.NewStructValue(&structpb.Struct{
-												Fields: map[string]*structpb.Value{
-													"name": structpb.NewStringValue("test"),
-												},
-											}),
-											"permissions": structpb.NewListValue(&structpb.ListValue{
-												Values: []*structpb.Value{
-													structpb.NewStructValue(&structpb.Struct{
-														Fields: map[string]*structpb.Value{
-															"principals": structpb.NewListValue(&structpb.ListValue{
-																Values: []*structpb.Value{
-																	structpb.NewStructValue(&structpb.Struct{
-																		Fields: map[string]*structpb.Value{
-																			"user": structpb.NewStringValue("test"),
-																		},
-																	}),
-																},
-															}),
-														},
-													}),
-												},
-											}),
-										},
-									}),
+							Resource: resource.MustStructJSON(`{
+								"apiVersion": "s3.statnett.no/v1alpha1",
+								"kind": "Bucket",
+								"metadata": {
+									"name": "test",
+									"labels": {
+										"crossplane.io/claim-namespace": "test"
+									}
 								},
-							},
+								"spec": {
+									"accountRef": {
+										"name": "test"
+									},
+									"permissions": [
+										{
+											"principals": [
+												{
+													"user": "test"
+												}
+											]
+										}
+									]
+								}
+							}`),
 						},
 					},
 				},
@@ -123,75 +105,49 @@ func TestRunFunction(t *testing.T) {
 					}`),
 					Observed: &fnv1.State{
 						Composite: &fnv1.Resource{
-							Resource: &structpb.Struct{
-								Fields: map[string]*structpb.Value{
-									"apiVersion": structpb.NewStringValue("s3.statnett.no/v1alpha1"),
-									"kind":       structpb.NewStringValue("Bucket"),
-									"metadata": structpb.NewStructValue(&structpb.Struct{
-										Fields: map[string]*structpb.Value{
-											"name": structpb.NewStringValue("test"),
-											"labels": structpb.NewStructValue(&structpb.Struct{
-												Fields: map[string]*structpb.Value{
-													"crossplane.io/claim-namespace": structpb.NewStringValue("test"),
-												},
-											}),
-										},
-									}),
-									"spec": structpb.NewStructValue(&structpb.Struct{
-										Fields: map[string]*structpb.Value{
-											"accountRef": structpb.NewStructValue(&structpb.Struct{
-												Fields: map[string]*structpb.Value{
-													"name": structpb.NewStringValue("test"),
-												},
-											}),
-											"permissions": structpb.NewListValue(&structpb.ListValue{
-												Values: []*structpb.Value{
-													structpb.NewStructValue(&structpb.Struct{
-														Fields: map[string]*structpb.Value{
-															"principals": structpb.NewListValue(&structpb.ListValue{
-																Values: []*structpb.Value{
-																	structpb.NewStructValue(&structpb.Struct{
-																		Fields: map[string]*structpb.Value{
-																			"user": structpb.NewStringValue("test"),
-																		},
-																	}),
-																},
-															}),
-														},
-													}),
-												},
-											}),
-										},
-									}),
+							Resource: resource.MustStructJSON(`{
+								"apiVersion": "s3.statnett.no/v1alpha1",
+								"kind": "Bucket",
+								"metadata": {
+									"name": "test",
+									"labels": {
+										"crossplane.io/claim-namespace": "test"
+									}
 								},
-							},
+								"spec": {
+									"accountRef": {
+										"name": "test"
+									},
+									"permissions": [
+										{
+											"principals": [
+												{
+													"user": "test"
+												}
+											]
+										}
+									]
+								}
+							}`),
 						},
 					},
 					ExtraResources: map[string]*fnv1.Resources{
 						"test": {
 							Items: []*fnv1.Resource{
 								{
-									Resource: &structpb.Struct{
-										Fields: map[string]*structpb.Value{
-											"apiVersion": structpb.NewStringValue("iam.aws.upbound.io/v1beta1"),
-											"kind":       structpb.NewStringValue("User"),
-											"metadata": structpb.NewStructValue(&structpb.Struct{
-												Fields: map[string]*structpb.Value{
-													"name":      structpb.NewStringValue("test"),
-													"namespace": structpb.NewStringValue("test"),
-												},
-											}),
-											"status": structpb.NewStructValue(&structpb.Struct{
-												Fields: map[string]*structpb.Value{
-													"forProvider": structpb.NewStructValue(&structpb.Struct{
-														Fields: map[string]*structpb.Value{
-															"arn": structpb.NewStringValue("test"),
-														},
-													}),
-												},
-											}),
+									Resource: resource.MustStructJSON(`{
+										"apiVersion": "iam.aws.upbound.io/v1beta1",
+										"kind": "User",
+										"metadata": {
+											"name": "test",
+											"namespace": "test"
 										},
-									},
+										"status": {
+											"forProvider": {
+												"arn": "test"
+											}
+										}
+									}`),
 								},
 							},
 						},
@@ -203,35 +159,23 @@ func TestRunFunction(t *testing.T) {
 					Meta: &fnv1.ResponseMeta{Tag: "hello", Ttl: durationpb.New(response.DefaultTTL)},
 					Context: &structpb.Struct{
 						Fields: map[string]*structpb.Value{
-							FunctionContextKeyS3UserARN: structpb.NewStructValue(&structpb.Struct{
-								Fields: map[string]*structpb.Value{
-									"test": structpb.NewListValue(&structpb.ListValue{
-										Values: []*structpb.Value{
-											structpb.NewStructValue(&structpb.Struct{
-												Fields: map[string]*structpb.Value{
-													"apiVersion": structpb.NewStringValue("iam.aws.upbound.io/v1beta1"),
-													"kind":       structpb.NewStringValue("User"),
-													"metadata": structpb.NewStructValue(&structpb.Struct{
-														Fields: map[string]*structpb.Value{
-															"name":      structpb.NewStringValue("test"),
-															"namespace": structpb.NewStringValue("test"),
-														},
-													}),
-													"status": structpb.NewStructValue(&structpb.Struct{
-														Fields: map[string]*structpb.Value{
-															"forProvider": structpb.NewStructValue(&structpb.Struct{
-																Fields: map[string]*structpb.Value{
-																	"arn": structpb.NewStringValue("test"),
-																},
-															}),
-														},
-													}),
-												},
-											}),
+							FunctionContextKeyS3UserARN: structpb.NewStructValue(resource.MustStructJSON(`{
+								"test": [
+									{
+										"apiVersion": "iam.aws.upbound.io/v1beta1",
+										"kind": "User",
+										"metadata": {
+											"name": "test",
+											"namespace": "test"
 										},
-									}),
-								},
-							}),
+										"status": {
+											"forProvider": {
+												"arn": "test"
+											}
+										}
+									}
+								]
+							}`)),
 						},
 					},
 					Requirements: &fnv1.Requirements{
