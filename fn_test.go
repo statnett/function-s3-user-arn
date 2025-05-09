@@ -49,8 +49,12 @@ func TestRunFunction(t *testing.T) {
 									"kind":       structpb.NewStringValue("Input"),
 									"metadata": structpb.NewStructValue(&structpb.Struct{
 										Fields: map[string]*structpb.Value{
-											"name":      structpb.NewStringValue("test"),
-											"namespace": structpb.NewStringValue("test"),
+											"name": structpb.NewStringValue("test"),
+											"labels": structpb.NewStructValue(&structpb.Struct{
+												Fields: map[string]*structpb.Value{
+													"crossplane.io/claim-namespace": structpb.NewStringValue("test"),
+												},
+											}),
 										},
 									}),
 									"spec": structpb.NewStructValue(&structpb.Struct{
@@ -125,13 +129,13 @@ func TestRunFunction(t *testing.T) {
 									"kind":       structpb.NewStringValue("Bucket"),
 									"metadata": structpb.NewStructValue(&structpb.Struct{
 										Fields: map[string]*structpb.Value{
-											"name":      structpb.NewStringValue("test"),
+											"name": structpb.NewStringValue("test"),
+											"labels": structpb.NewStructValue(&structpb.Struct{
+												Fields: map[string]*structpb.Value{
+													"crossplane.io/claim-namespace": structpb.NewStringValue("test"),
+												},
+											}),
 										},
-										"labels": structpb.NewStructValue(&structpb.Struct{
-											Fields: map[string]*structpb.Value{
-												"crossplane.io/claim-namespace":      structpb.NewStringValue("test"),
-											},
-										}),
 									}),
 									"spec": structpb.NewStructValue(&structpb.Struct{
 										Fields: map[string]*structpb.Value{
