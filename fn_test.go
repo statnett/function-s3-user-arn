@@ -8,7 +8,6 @@ import (
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"google.golang.org/protobuf/testing/protocmp"
 	"google.golang.org/protobuf/types/known/durationpb"
-	"google.golang.org/protobuf/types/known/structpb"
 
 	"github.com/crossplane/function-sdk-go/logging"
 	fnv1 "github.com/crossplane/function-sdk-go/proto/v1"
@@ -54,7 +53,7 @@ func TestRunFunction(t *testing.T) {
 								},
 								"spec": {
 									"accountRef": {
-										"name": "test"
+										"name": "account"
 									},
 									"permissions": [
 										{
@@ -84,7 +83,7 @@ func TestRunFunction(t *testing.T) {
 										Labels: map[string]string{
 											"crossplane.io/claim-name":      "test",
 											"crossplane.io/claim-namespace": "test",
-											"s3.statnett.no/account-name":   "test",
+											"s3.statnett.no/account-name":   "account",
 										},
 									},
 								},
@@ -116,7 +115,7 @@ func TestRunFunction(t *testing.T) {
 								},
 								"spec": {
 									"accountRef": {
-										"name": "test"
+										"name": "account"
 									},
 									"permissions": [
 										{
@@ -157,27 +156,25 @@ func TestRunFunction(t *testing.T) {
 			want: want{
 				rsp: &fnv1.RunFunctionResponse{
 					Meta: &fnv1.ResponseMeta{Tag: "hello", Ttl: durationpb.New(response.DefaultTTL)},
-					Context: &structpb.Struct{
-						Fields: map[string]*structpb.Value{
-							FunctionContextKeyS3UserARN: structpb.NewStructValue(resource.MustStructJSON(`{
-								"test": [
-									{
-										"apiVersion": "iam.aws.upbound.io/v1beta1",
-										"kind": "User",
-										"metadata": {
-											"name": "test",
-											"namespace": "test"
-										},
-										"status": {
-											"forProvider": {
-												"arn": "test"
-											}
+					Context: resource.MustStructJSON(`{
+						"s3-user-arn.fn.crossplane.io": {
+							"test": [
+								{
+									"apiVersion": "iam.aws.upbound.io/v1beta1",
+									"kind": "User",
+									"metadata": {
+										"name": "test",
+										"namespace": "test"
+									},
+									"status": {
+										"forProvider": {
+											"arn": "test"
 										}
 									}
-								]
-							}`)),
-						},
-					},
+								}
+							]
+						}
+					}`),
 					Requirements: &fnv1.Requirements{
 						ExtraResources: map[string]*fnv1.ResourceSelector{
 							"test": {
@@ -188,7 +185,7 @@ func TestRunFunction(t *testing.T) {
 										Labels: map[string]string{
 											"crossplane.io/claim-name":      "test",
 											"crossplane.io/claim-namespace": "test",
-											"s3.statnett.no/account-name":   "test",
+											"s3.statnett.no/account-name":   "account",
 										},
 									},
 								},
