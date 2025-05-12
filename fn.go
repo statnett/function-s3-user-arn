@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/types/known/structpb"
@@ -64,7 +65,7 @@ func (f *Function) RunFunction(_ context.Context, req *fnv1.RunFunctionRequest) 
 	}
 
 	// Build extraResource Requests.
-	rsp.Requirements = buildRequirements(in, oxr)
+	rsp.Requirements = buildRequirements(in, oxr, req.GetContext())
 
 	// The request response cycle for the Crossplane ExtraResources API requires that function-extra-resources
 	// tells Crossplane what it wants.
@@ -112,24 +113,44 @@ func (f *Function) RunFunction(_ context.Context, req *fnv1.RunFunctionRequest) 
 
 // Build requirements takes input and outputs an array of external resoruce requirements to request
 // from Crossplane's external resource API.
-func buildRequirements(_ *v1alpha1.Input, xr *resource.Composite) *fnv1.Requirements {
-	extraResources := make(map[string]*fnv1.ResourceSelector)
+func buildRequirements(_ *v1alpha1.Input, xr *resource.Composite, context *structpb.Struct) *fnv1.Requirements {
 	spec := xr.Resource.Object["spec"].(map[string]any)
+
+	env := context.GetFields()["apiextensions.crossplane.io/environment"].GetStructValue()
+	if env == nil {
+		return &fnv1.Requirements{}
+	}
+
+	observedTenant := env.GetFields()["tenantName"].GetStringValue()
+	observedAccount := spec["accountRef"].(map[string]any)["name"].(string)
+
+	extraResources := make(map[string]*fnv1.ResourceSelector)
 	permissions, ok := spec["permissions"].([]any)
 	if ok {
 		for _, permission := range permissions {
 			for _, principal := range permission.(map[string]any)["principals"].([]any) {
-				user, ok := principal.(map[string]any)["user"]
-				if ok {
-					extraResources[user.(string)] = &fnv1.ResourceSelector{
+				principal := principal.(map[string]any)
+				if user, ok := principal["user"]; ok {
+					user := user.(string)
+					tenant := observedTenant
+					if t, ok := principal["tenant"]; ok {
+						tenant = t.(string)
+					}
+					account := observedAccount
+					if a, ok := principal["account"]; ok {
+						account = a.(string)
+					}
+
+					key := fmt.Sprintf("%s %s %s", observedTenant, observedAccount, user)
+					extraResources[key] = &fnv1.ResourceSelector{
 						ApiVersion: "iam.aws.upbound.io/v1beta1",
 						Kind:       "User",
 						Match: &fnv1.ResourceSelector_MatchLabels{
 							MatchLabels: &fnv1.MatchLabels{
 								Labels: map[string]string{
-									"crossplane.io/claim-name":      user.(string),
-									"crossplane.io/claim-namespace": xr.Resource.Unstructured.GetLabels()["crossplane.io/claim-namespace"],
-									"s3.statnett.no/account-name":   spec["accountRef"].(map[string]any)["name"].(string),
+									"s3.statnett.no/tenant-name":  tenant,
+									"s3.statnett.no/account-name": account,
+									"crossplane.io/claim-name":    user,
 								},
 							},
 						},

@@ -46,10 +46,7 @@ func TestRunFunction(t *testing.T) {
 								"apiVersion": "s3.statnett.no/v1alpha1",
 								"kind": "Bucket",
 								"metadata": {
-									"name": "test",
-									"labels": {
-										"crossplane.io/claim-namespace": "test"
-									}
+									"name": "test"
 								},
 								"spec": {
 									"accountRef": {
@@ -68,22 +65,32 @@ func TestRunFunction(t *testing.T) {
 							}`),
 						},
 					},
+					Context: resource.MustStructJSON(`{
+						"apiextensions.crossplane.io/environment": {
+							"tenantName": "tenant"
+						}
+					}`),
 				},
 			},
 			want: want{
 				rsp: &fnv1.RunFunctionResponse{
 					Meta: &fnv1.ResponseMeta{Tag: "hello", Ttl: durationpb.New(response.DefaultTTL)},
+					Context: resource.MustStructJSON(`{
+						"apiextensions.crossplane.io/environment": {
+							"tenantName": "tenant"
+						}
+					}`),
 					Requirements: &fnv1.Requirements{
 						ExtraResources: map[string]*fnv1.ResourceSelector{
-							"test": {
+							"tenant account test": {
 								ApiVersion: "iam.aws.upbound.io/v1beta1",
 								Kind:       "User",
 								Match: &fnv1.ResourceSelector_MatchLabels{
 									MatchLabels: &fnv1.MatchLabels{
 										Labels: map[string]string{
-											"crossplane.io/claim-name":      "test",
-											"crossplane.io/claim-namespace": "test",
-											"s3.statnett.no/account-name":   "account",
+											"s3.statnett.no/tenant-name":  "tenant",
+											"s3.statnett.no/account-name": "account",
+											"crossplane.io/claim-name":    "test",
 										},
 									},
 								},
@@ -108,10 +115,7 @@ func TestRunFunction(t *testing.T) {
 								"apiVersion": "s3.statnett.no/v1alpha1",
 								"kind": "Bucket",
 								"metadata": {
-									"name": "test",
-									"labels": {
-										"crossplane.io/claim-namespace": "test"
-									}
+									"name": "test"
 								},
 								"spec": {
 									"accountRef": {
@@ -130,8 +134,13 @@ func TestRunFunction(t *testing.T) {
 							}`),
 						},
 					},
+					Context: resource.MustStructJSON(`{
+						"apiextensions.crossplane.io/environment": {
+							"tenantName": "tenant"
+						}
+					}`),
 					ExtraResources: map[string]*fnv1.Resources{
-						"test": {
+						"tenant account test": {
 							Items: []*fnv1.Resource{
 								{
 									Resource: resource.MustStructJSON(`{
@@ -157,8 +166,11 @@ func TestRunFunction(t *testing.T) {
 				rsp: &fnv1.RunFunctionResponse{
 					Meta: &fnv1.ResponseMeta{Tag: "hello", Ttl: durationpb.New(response.DefaultTTL)},
 					Context: resource.MustStructJSON(`{
+						"apiextensions.crossplane.io/environment": {
+							"tenantName": "tenant"
+						},
 						"s3-user-arn.fn.crossplane.io": {
-							"test": [
+							"tenant account test": [
 								{
 									"apiVersion": "iam.aws.upbound.io/v1beta1",
 									"kind": "User",
@@ -177,15 +189,15 @@ func TestRunFunction(t *testing.T) {
 					}`),
 					Requirements: &fnv1.Requirements{
 						ExtraResources: map[string]*fnv1.ResourceSelector{
-							"test": {
+							"tenant account test": {
 								ApiVersion: "iam.aws.upbound.io/v1beta1",
 								Kind:       "User",
 								Match: &fnv1.ResourceSelector_MatchLabels{
 									MatchLabels: &fnv1.MatchLabels{
 										Labels: map[string]string{
-											"crossplane.io/claim-name":      "test",
-											"crossplane.io/claim-namespace": "test",
-											"s3.statnett.no/account-name":   "account",
+											"s3.statnett.no/tenant-name":  "tenant",
+											"s3.statnett.no/account-name": "account",
+											"crossplane.io/claim-name":    "test",
 										},
 									},
 								},
