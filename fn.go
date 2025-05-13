@@ -141,7 +141,7 @@ func buildRequirements(_ *v1alpha1.Input, xr *resource.Composite, context *struc
 						account = a.(string)
 					}
 
-					key := fmt.Sprintf("%s %s %s", observedTenant, observedAccount, user)
+					key := fmt.Sprintf("%s %s %s", tenant, account, user)
 					extraResources[key] = &fnv1.ResourceSelector{
 						ApiVersion: "iam.aws.upbound.io/v1beta1",
 						Kind:       "User",
