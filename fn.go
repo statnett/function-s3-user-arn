@@ -107,15 +107,6 @@ func (f *Function) RunFunction(_ context.Context, req *fnv1.RunFunctionRequest) 
 	}
 	response.SetContextKey(rsp, FunctionContextKeyS3UserARN, structpb.NewStructValue(s))
 
-	response.Normalf(rsp, "")
-
-	// You can set a custom status condition on the claim. This allows you to
-	// communicate with the user. See the link below for status condition
-	// guidance.
-	// https://github.com/kubernetes/community/blob/master/contributors/devel/sig-architecture/api-conventions.md#typical-status-properties
-	response.ConditionTrue(rsp, "FunctionSuccess", "Success").
-		TargetCompositeAndClaim()
-
 	return rsp, nil
 }
 
