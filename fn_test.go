@@ -230,7 +230,7 @@ func TestRunFunction(t *testing.T) {
 										{
 											"principals": [
 												{
-											    "tenant": "foo",
+													"tenant": "foo",
 													"account": "bar",
 													"user": "baz"
 												}
