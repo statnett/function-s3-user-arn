@@ -1,6 +1,6 @@
 module github.com/crossplane/user-s3-arn
 
-go 1.23
+go 1.24.3
 
 toolchain go1.23.2
 
