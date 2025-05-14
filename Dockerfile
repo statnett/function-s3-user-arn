@@ -44,7 +44,6 @@ FROM gcr.io/distroless/static-debian12:nonroot AS image
 WORKDIR /
 COPY --from=build /function /function
 
-COPY package/crossplane.yaml /package.yaml
 EXPOSE 9443
 USER nonroot:nonroot
 ENTRYPOINT ["/function"]
