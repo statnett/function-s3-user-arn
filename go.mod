@@ -2,8 +2,6 @@ module github.com/crossplane/user-s3-arn
 
 go 1.24.3
 
-toolchain go1.23.2
-
 require (
 	github.com/alecthomas/kong v1.10.0
 	github.com/crossplane/function-sdk-go v0.4.0
