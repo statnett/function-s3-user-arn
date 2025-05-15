@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - ghcr-io
     tags:
       - v*
   pull_request: {}
@@ -102,26 +103,5 @@ jobs:
       - name: Build Package
         run: ./crossplane xpkg build --package-file=${{ matrix.arch }}.xpkg --package-root=package/ --embed-runtime-image-tarball=runtime-${{ matrix.arch }}.tar
 
-      - name: Upload Single-Platform Package
-        uses: actions/upload-artifact@v4
-        with:
-          name: package-${{ matrix.arch }}
-          path: "*.xpkg"
-          if-no-files-found: error
-          retention-days: 1
-
-  # This job builds and pushes to ghcr.io
-  push:
-    runs-on: ubuntu-24.04
-    needs:
-      - build
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Login to Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Upload Package
+        run: ./crossplane xpkg push -f=${{ matrix.arch }}.xpkg  https://ghcr.io/statnett/function-s3-user-arn${{ github.ref }}
