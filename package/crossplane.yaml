@@ -2,5 +2,11 @@
 apiVersion: meta.pkg.crossplane.io/v1beta1
 kind: Function
 metadata:
-  name: function-template-go
+  annotations:
+    meta.crossplane.io/description: "Function to lookup AWS IAM User ARNs"
+    meta.crossplane.io/license: "Apache-2.0"
+    meta.crossplane.io/maintainer: "Statnett SF <opensource@statnett.no>"
+    meta.crossplane.io/readme: "https://github.com/statnett/function-s3-user-arn/blob/main/README.md"
+    meta.crossplane.io/source: "https://github.com/statnett/function-s3-user-arn"
+  name: s3-user-arn
 spec: {}
