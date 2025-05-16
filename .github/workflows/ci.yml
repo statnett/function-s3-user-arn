@@ -108,4 +108,5 @@ jobs:
         run: ./crossplane xpkg build --package-file=${{ matrix.arch }}.xpkg --package-root=package/ --embed-runtime-image-tarball=runtime-${{ matrix.arch }}.tar
 
       - name: Upload Package
-        run: ./crossplane xpkg push -f ${{ matrix.arch }}.xpkg  ghcr.io/statnett/function-s3-user-arn:${{ github.ref }}
+        if: ${{ steps.release.outputs.release_created }}
+        run: ./crossplane xpkg push -f ${{ matrix.arch }}.xpkg  ghcr.io/statnett/function-s3-user-arn:${{ steps.release.outputs.tag_name }}
