@@ -107,10 +107,7 @@ jobs:
       - name: Build Package
         run: ./crossplane xpkg build --package-file=${{ matrix.arch }}.xpkg --package-root=package/ --embed-runtime-image-tarball=runtime-${{ matrix.arch }}.tar
 
-      # TODO there should be some variable to access this without scripting, no?
-      - name: Get Latest Tag
-        id: get_latest_tag
-        run: echo "LATEST_TAG=$(git describe --tags --abbrev=0)" >> $GITHUB_ENV
-
       - name: Upload Package
-        run: ./crossplane xpkg push -f ${{ matrix.arch }}.xpkg  ghcr.io/statnett/function-s3-user-arn::${{ env.LATEST_TAG }}
+        run: |
+          LATEST_TAG=$(git describe --tags `git rev-list --tags --max-count=1`)
+          ./crossplane xpkg push -f ${{ matrix.arch }}.xpkg  ghcr.io/statnett/function-s3-user-arn:${{ LATEST_TAG }}
