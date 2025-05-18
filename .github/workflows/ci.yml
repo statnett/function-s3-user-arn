@@ -107,13 +107,5 @@ jobs:
       - name: Build Package
         run: ./crossplane xpkg build --package-file=${{ matrix.arch }}.xpkg --package-root=package/ --embed-runtime-image-tarball=runtime-${{ matrix.arch }}.tar
 
-      - name: Extract metadata (tags, labels)
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ghcr.io/statnett/function-s3-user-arn
-
       - name: Push Crossplane Package
-        run: |
-          TAG=$(echo "${{ steps.meta.outputs.tags }}" | cut -d',' -f1 | cut -d':' -f2)
-          ./crossplane xpkg push -f ${{ matrix.arch }}.xpkg ghcr.io/statnett/function-s3-user-arn:${TAG}
+        run: ./crossplane xpkg push -f ${{ matrix.arch }}.xpkg ghcr.io/statnett/function-s3-user-arn:${{ github.ref_name }}
