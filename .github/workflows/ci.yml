@@ -116,4 +116,4 @@ jobs:
       - name: Push Crossplane Package
         run: |
           TAG=$(echo "${{ steps.meta.outputs.tags }}" | cut -d',' -f1 | cut -d':' -f2)
-          ./crossplane xpkg push -f ${{ matrix.arch }}.xpkg ghcr.io/statnett/function-s3-user-arn::${TAG}
+          ./crossplane xpkg push -f ${{ matrix.arch }}.xpkg ghcr.io/statnett/function-s3-user-arn:${TAG}
