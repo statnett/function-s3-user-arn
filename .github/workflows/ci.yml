@@ -112,4 +112,5 @@ jobs:
         run: echo "TAG=$(basename $GITHUB_REF_NAME)" >> $GITHUB_ENV
 
       - name: Push Crossplane Package
+        if: startsWith(github.ref, 'refs/tags/v')
         run: ./crossplane xpkg push -f ${{ matrix.arch }}.xpkg ghcr.io/statnett/function-s3-user-arn-${{ matrix.arch }}:${{ env.TAG }}
