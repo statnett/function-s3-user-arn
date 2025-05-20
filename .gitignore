@@ -19,6 +19,3 @@
 
 # Go workspace file
 go.work
-
-# Built binary
-user-s3-arn
