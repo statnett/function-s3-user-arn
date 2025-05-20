@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/statnett/function-s3-user-arn/compare/v1.0.0...v1.0.1) (2025-05-20)
+
+
+### Bug Fixes
+
+* dep upgrades (to test ci release-setup) ([#28](https://github.com/statnett/function-s3-user-arn/issues/28)) ([a43691b](https://github.com/statnett/function-s3-user-arn/commit/a43691beb48a34347221f3f847fc5b9bf0811a43))
+
 ## 1.0.0 (2025-05-16)
 
 
