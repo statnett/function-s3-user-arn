@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.2](https://github.com/statnett/function-s3-user-arn/compare/v1.0.1...v1.0.2) (2025-06-20)
+
+
+### Bug Fixes
+
+* **deps:** update module k8s.io/apimachinery to v0.33.2 ([#30](https://github.com/statnett/function-s3-user-arn/issues/30)) ([15afcca](https://github.com/statnett/function-s3-user-arn/commit/15afccae4b8d96abe276edfcebd2171c302a062c))
+
 ## [1.0.1](https://github.com/statnett/function-s3-user-arn/compare/v1.0.0...v1.0.1) (2025-05-20)
 
 
