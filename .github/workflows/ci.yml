@@ -15,7 +15,7 @@ on:
 
 env:
   # Common versions
-  GO_VERSION: '1.24.3'
+  GO_VERSION: '1.25.5'
   DOCKER_BUILDX_VERSION: 'v0.23.0'
 
 jobs:
