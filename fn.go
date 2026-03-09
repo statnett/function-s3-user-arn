@@ -74,13 +74,13 @@ func (f *Function) RunFunction(_ context.Context, req *fnv1.RunFunctionRequest) 
 	// function-extra-resources does not know if it has requested the resources already or not.
 	//
 	// If it has and these resources are now present, proceed with verification and conversion.
-	if len(rsp.GetRequirements().GetExtraResources()) > 0 && req.ExtraResources == nil {
+	if len(rsp.GetRequirements().GetExtraResources()) > 0 && req.ExtraResources == nil { //nolint:staticcheck // SA1019 as it requires a full rewrite to fix this
 		f.log.Debug("No extra resources present, exiting", "requirements", rsp.GetRequirements())
 		return rsp, nil
 	}
 
 	// Pull extra resources from the ExtraResources request field.
-	extraResources, err := request.GetExtraResources(req)
+	extraResources, err := request.GetExtraResources(req) //nolint:staticcheck // SA1019 as it requires a full rewrite to fix this
 	if err != nil {
 		response.Fatal(rsp, errors.Errorf("fetching extra resources %T: %w", req, err))
 		return rsp, nil
