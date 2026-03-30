@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.3](https://github.com/statnett/function-s3-user-arn/compare/v1.0.2...v1.0.3) (2026-03-30)
+
+
+### Bug Fixes
+
+* **deps:** update module github.com/crossplane/function-sdk-go to v0.6.2 ([#60](https://github.com/statnett/function-s3-user-arn/issues/60)) ([6146374](https://github.com/statnett/function-s3-user-arn/commit/6146374a2b6349340fcca973f0792ac390446c54))
+* **deps:** update module k8s.io/apimachinery to v0.35.3 ([#58](https://github.com/statnett/function-s3-user-arn/issues/58)) ([7841e58](https://github.com/statnett/function-s3-user-arn/commit/7841e58f650d038467eeb8b9b3d9746e8d3f87bf))
+
 ## [1.0.2](https://github.com/statnett/function-s3-user-arn/compare/v1.0.1...v1.0.2) (2026-03-09)
 
 
