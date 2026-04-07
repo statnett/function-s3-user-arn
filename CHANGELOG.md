@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.4](https://github.com/statnett/function-s3-user-arn/compare/v1.0.3...v1.0.4) (2026-04-07)
+
+
+### Bug Fixes
+
+* **deps:** update module github.com/alecthomas/kong to v1.15.0 ([#62](https://github.com/statnett/function-s3-user-arn/issues/62)) ([c1f0f9e](https://github.com/statnett/function-s3-user-arn/commit/c1f0f9e9b31bdb787a137b9b50ed810f9296eaf5))
+
 ## [1.0.3](https://github.com/statnett/function-s3-user-arn/compare/v1.0.2...v1.0.3) (2026-03-30)
 
 
