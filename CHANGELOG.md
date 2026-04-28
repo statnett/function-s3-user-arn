@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.4](https://github.com/statnett/function-s3-user-arn/compare/v1.0.3...v1.0.4) (2026-04-28)
+
+
+### Bug Fixes
+
+* **deps:** update module github.com/alecthomas/kong to v1.15.0 ([#62](https://github.com/statnett/function-s3-user-arn/issues/62)) ([c1f0f9e](https://github.com/statnett/function-s3-user-arn/commit/c1f0f9e9b31bdb787a137b9b50ed810f9296eaf5))
+* **deps:** update module k8s.io/apimachinery to v0.36.0 ([#64](https://github.com/statnett/function-s3-user-arn/issues/64)) ([ea299c6](https://github.com/statnett/function-s3-user-arn/commit/ea299c61a65d324cd3096f7ccaeb078b7d77354a))
+
 ## [1.0.3](https://github.com/statnett/function-s3-user-arn/compare/v1.0.2...v1.0.3) (2026-03-30)
 
 
