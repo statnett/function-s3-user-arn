@@ -26,6 +26,8 @@ func TestRunFunction(t *testing.T) {
 		err error
 	}
 
+	const tagHello = "hello"
+
 	cases := map[string]struct {
 		reason string
 		args   args
@@ -35,7 +37,7 @@ func TestRunFunction(t *testing.T) {
 			reason: "The Function requires more external resources",
 			args: args{
 				req: &fnv1.RunFunctionRequest{
-					Meta: &fnv1.RequestMeta{Tag: "hello"},
+					Meta: &fnv1.RequestMeta{Tag: tagHello},
 					Input: resource.MustStructJSON(`{
 						"apiVersion": "s3-user-arn.fn.crossplane.io/v1alpha1",
 						"kind": "Input"
@@ -74,7 +76,7 @@ func TestRunFunction(t *testing.T) {
 			},
 			want: want{
 				rsp: &fnv1.RunFunctionResponse{
-					Meta: &fnv1.ResponseMeta{Tag: "hello", Ttl: durationpb.New(response.DefaultTTL)},
+					Meta: &fnv1.ResponseMeta{Tag: tagHello, Ttl: durationpb.New(response.DefaultTTL)},
 					Context: resource.MustStructJSON(`{
 						"apiextensions.crossplane.io/environment": {
 							"tenantName": "tenant"
@@ -104,7 +106,7 @@ func TestRunFunction(t *testing.T) {
 			reason: "The Function should return a successful result if sufficient resources are provided",
 			args: args{
 				req: &fnv1.RunFunctionRequest{
-					Meta: &fnv1.RequestMeta{Tag: "hello"},
+					Meta: &fnv1.RequestMeta{Tag: tagHello},
 					Input: resource.MustStructJSON(`{
 						"apiVersion": "s3-user-arn.fn.crossplane.io/v1alpha1",
 						"kind": "Input"
@@ -163,7 +165,7 @@ func TestRunFunction(t *testing.T) {
 			},
 			want: want{
 				rsp: &fnv1.RunFunctionResponse{
-					Meta: &fnv1.ResponseMeta{Tag: "hello", Ttl: durationpb.New(response.DefaultTTL)},
+					Meta: &fnv1.ResponseMeta{Tag: tagHello, Ttl: durationpb.New(response.DefaultTTL)},
 					Context: resource.MustStructJSON(`{
 						"apiextensions.crossplane.io/environment": {
 							"tenantName": "tenant"
@@ -209,7 +211,7 @@ func TestRunFunction(t *testing.T) {
 			reason: "The Function should return a successful result if sufficient resources are provided",
 			args: args{
 				req: &fnv1.RunFunctionRequest{
-					Meta: &fnv1.RequestMeta{Tag: "hello"},
+					Meta: &fnv1.RequestMeta{Tag: tagHello},
 					Input: resource.MustStructJSON(`{
 						"apiVersion": "s3-user-arn.fn.crossplane.io/v1alpha1",
 						"kind": "Input"
@@ -270,7 +272,7 @@ func TestRunFunction(t *testing.T) {
 			},
 			want: want{
 				rsp: &fnv1.RunFunctionResponse{
-					Meta: &fnv1.ResponseMeta{Tag: "hello", Ttl: durationpb.New(response.DefaultTTL)},
+					Meta: &fnv1.ResponseMeta{Tag: tagHello, Ttl: durationpb.New(response.DefaultTTL)},
 					Context: resource.MustStructJSON(`{
 						"apiextensions.crossplane.io/environment": {
 							"tenantName": "tenant"
