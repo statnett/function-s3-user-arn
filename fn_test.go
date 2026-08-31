@@ -83,7 +83,7 @@ func TestRunFunction(t *testing.T) {
 						}
 					}`),
 					Requirements: &fnv1.Requirements{
-						ExtraResources: map[string]*fnv1.ResourceSelector{
+						Resources: map[string]*fnv1.ResourceSelector{
 							"tenant account test": {
 								ApiVersion: "iam.aws.upbound.io/v1beta1",
 								Kind:       "User",
@@ -141,7 +141,7 @@ func TestRunFunction(t *testing.T) {
 							"tenantName": "tenant"
 						}
 					}`),
-					ExtraResources: map[string]*fnv1.Resources{
+					RequiredResources: map[string]*fnv1.Resources{
 						"tenant account test": {
 							Items: []*fnv1.Resource{
 								{
@@ -188,7 +188,7 @@ func TestRunFunction(t *testing.T) {
 						}
 					}`),
 					Requirements: &fnv1.Requirements{
-						ExtraResources: map[string]*fnv1.ResourceSelector{
+						Resources: map[string]*fnv1.ResourceSelector{
 							"tenant account test": {
 								ApiVersion: "iam.aws.upbound.io/v1beta1",
 								Kind:       "User",
@@ -248,7 +248,7 @@ func TestRunFunction(t *testing.T) {
 							"tenantName": "tenant"
 						}
 					}`),
-					ExtraResources: map[string]*fnv1.Resources{
+					RequiredResources: map[string]*fnv1.Resources{
 						"foo bar baz": {
 							Items: []*fnv1.Resource{
 								{
@@ -295,7 +295,7 @@ func TestRunFunction(t *testing.T) {
 						}
 					}`),
 					Requirements: &fnv1.Requirements{
-						ExtraResources: map[string]*fnv1.ResourceSelector{
+						Resources: map[string]*fnv1.ResourceSelector{
 							"foo bar baz": {
 								ApiVersion: "iam.aws.upbound.io/v1beta1",
 								Kind:       "User",

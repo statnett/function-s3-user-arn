@@ -2,12 +2,9 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 
-	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/types/known/structpb"
-	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 
 	"github.com/crossplane/function-sdk-go/errors"
 	"github.com/crossplane/function-sdk-go/logging"
@@ -64,47 +61,29 @@ func (f *Function) RunFunction(_ context.Context, req *fnv1.RunFunctionRequest) 
 		return rsp, nil
 	}
 
-	// Build extraResource Requests.
+	// Build required resource requests.
 	rsp.Requirements = buildRequirements(in, oxr, req.GetContext())
 
-	// The request response cycle for the Crossplane ExtraResources API requires that function-extra-resources
+	// The request response cycle for the Crossplane RequiredResources API requires that function-s3-user-arn
 	// tells Crossplane what it wants.
-	// Then a new rquest is sent to function-extra-resources with those resources present at the ExtraResources field.
+	// Then a new request is sent to function-s3-user-arn with those resources present at the RequiredResources field.
 	//
-	// function-extra-resources does not know if it has requested the resources already or not.
+	// function-s3-user-arn does not know if it has requested the resources already or not.
 	//
 	// If it has and these resources are now present, proceed with verification and conversion.
-	if len(rsp.GetRequirements().GetExtraResources()) > 0 && req.ExtraResources == nil { //nolint:staticcheck // SA1019 as it requires a full rewrite to fix this
-		f.log.Debug("No extra resources present, exiting", "requirements", rsp.GetRequirements())
+	if len(rsp.GetRequirements().GetResources()) > 0 && req.RequiredResources == nil {
+		f.log.Debug("No required resources present, exiting", "requirements", rsp.GetRequirements())
 		return rsp, nil
 	}
 
-	// Pull extra resources from the ExtraResources request field.
-	extraResources, err := request.GetExtraResources(req) //nolint:staticcheck // SA1019 as it requires a full rewrite to fix this
-	if err != nil {
-		response.Fatal(rsp, errors.Errorf("fetching extra resources %T: %w", req, err))
-		return rsp, nil
-	}
-
-	cleanedExtras := make(map[string][]unstructured.Unstructured, len(extraResources))
-	for k, r := range extraResources {
-		tmpExtra := make([]unstructured.Unstructured, 0, len(r))
-		for _, extra := range r {
-			tmpExtra = append(tmpExtra, *extra.Resource)
+	// Pull required resources from the RequiredResources request field.
+	s := &structpb.Struct{Fields: make(map[string]*structpb.Value, len(req.GetRequiredResources()))}
+	for k, r := range req.GetRequiredResources() {
+		resources := &structpb.ListValue{Values: make([]*structpb.Value, 0, len(r.GetItems()))}
+		for _, extra := range r.GetItems() {
+			resources.Values = append(resources.Values, structpb.NewStructValue(extra.GetResource()))
 		}
-		cleanedExtras[k] = tmpExtra
-	}
-
-	b, err := json.Marshal(cleanedExtras)
-	if err != nil {
-		response.Fatal(rsp, errors.Errorf("cannot marshal %T: %w", cleanedExtras, err))
-		return rsp, nil
-	}
-	s := &structpb.Struct{}
-	err = protojson.Unmarshal(b, s)
-	if err != nil {
-		response.Fatal(rsp, errors.Errorf("cannot unmarshal %T into %T: %w", b, s, err))
-		return rsp, nil
+		s.Fields[k] = structpb.NewListValue(resources)
 	}
 	response.SetContextKey(rsp, FunctionContextKeyS3UserARN, structpb.NewStructValue(s))
 
@@ -159,5 +138,5 @@ func buildRequirements(_ *v1alpha1.Input, xr *resource.Composite, context *struc
 			}
 		}
 	}
-	return &fnv1.Requirements{ExtraResources: extraResources}
+	return &fnv1.Requirements{Resources: extraResources}
 }
