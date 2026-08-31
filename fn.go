@@ -15,7 +15,7 @@ import (
 	"github.com/crossplane/user-s3-arn/input/v1alpha1"
 )
 
-// Key to retrieve extras at.
+// Key to retrieve required resources at.
 const (
 	FunctionContextKeyS3UserARN = "s3-user-arn.fn.crossplane.io"
 )
@@ -90,8 +90,7 @@ func (f *Function) RunFunction(_ context.Context, req *fnv1.RunFunctionRequest) 
 	return rsp, nil
 }
 
-// Build requirements takes input and outputs an array of external resoruce requirements to request
-// from Crossplane's external resource API.
+// Build requirements takes input and outputs resource requirements to request from Crossplane.
 func buildRequirements(_ *v1alpha1.Input, xr *resource.Composite, context *structpb.Struct) *fnv1.Requirements {
 	spec := xr.Resource.Object["spec"].(map[string]any)
 
@@ -103,7 +102,7 @@ func buildRequirements(_ *v1alpha1.Input, xr *resource.Composite, context *struc
 	observedTenant := env.GetFields()["tenantName"].GetStringValue()
 	observedAccount := spec["accountRef"].(map[string]any)["name"].(string)
 
-	extraResources := make(map[string]*fnv1.ResourceSelector)
+	requiredResources := make(map[string]*fnv1.ResourceSelector)
 	permissions, ok := spec["permissions"].([]any)
 	if ok {
 		for _, permission := range permissions {
@@ -121,7 +120,7 @@ func buildRequirements(_ *v1alpha1.Input, xr *resource.Composite, context *struc
 					}
 
 					key := fmt.Sprintf("%s %s %s", tenant, account, user)
-					extraResources[key] = &fnv1.ResourceSelector{
+					requiredResources[key] = &fnv1.ResourceSelector{
 						ApiVersion: "iam.aws.upbound.io/v1beta1",
 						Kind:       "User",
 						Match: &fnv1.ResourceSelector_MatchLabels{
@@ -138,5 +137,5 @@ func buildRequirements(_ *v1alpha1.Input, xr *resource.Composite, context *struc
 			}
 		}
 	}
-	return &fnv1.Requirements{Resources: extraResources}
+	return &fnv1.Requirements{Resources: requiredResources}
 }
