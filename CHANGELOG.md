@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.0.8](https://github.com/statnett/function-s3-user-arn/compare/v1.0.7...v1.0.8) (2026-09-03)
+
+
+### Bug Fixes
+
+* **deps:** update module github.com/alecthomas/kong to v1.16.1 ([#80](https://github.com/statnett/function-s3-user-arn/issues/80)) ([b9cab8b](https://github.com/statnett/function-s3-user-arn/commit/b9cab8b3485a42c3ba081d86ff679d85cc9069cd))
+* **deps:** update module google.golang.org/protobuf to v1.36.12 ([#82](https://github.com/statnett/function-s3-user-arn/issues/82)) ([003d6b6](https://github.com/statnett/function-s3-user-arn/commit/003d6b697f54293b279a133c09cddaed2804eb15))
+* **deps:** update module k8s.io/apimachinery to v0.37.0 ([#93](https://github.com/statnett/function-s3-user-arn/issues/93)) ([ba061a2](https://github.com/statnett/function-s3-user-arn/commit/ba061a23d2bc772aad22550c00f892c4db477496))
+* **deps:** update module sigs.k8s.io/controller-tools to v0.22.0 ([#100](https://github.com/statnett/function-s3-user-arn/issues/100)) ([ab45af6](https://github.com/statnett/function-s3-user-arn/commit/ab45af68dc96b282e2727cedc329841798b01ad1))
+
 ## [1.0.7](https://github.com/statnett/function-s3-user-arn/compare/v1.0.6...v1.0.7) (2026-08-06)
 
 
