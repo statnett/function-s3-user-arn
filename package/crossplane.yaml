@@ -9,4 +9,6 @@ metadata:
     meta.crossplane.io/readme: "https://github.com/statnett/function-s3-user-arn/blob/main/README.md"
     meta.crossplane.io/source: "https://github.com/statnett/function-s3-user-arn"
   name: s3-user-arn
-spec: {}
+spec:
+  crossplane:
+    version: ">=v2.0.0"
