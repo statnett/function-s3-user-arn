@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.0.0](https://github.com/statnett/function-s3-user-arn/compare/v1.0.9...v2.0.0) (2026-09-28)
+
+
+### ⚠ BREAKING CHANGES
+
+* use namespace scoped user for lookup ([#112](https://github.com/statnett/function-s3-user-arn/issues/112)) ([58a5696](https://github.com/statnett/function-s3-user-arn/commit/58a56967daddfedd7a11fdecb766084128adad2e))
+
+### Documentation
+
+* fix readme title ([#114](https://github.com/statnett/function-s3-user-arn/issues/114)) ([f162c0f](https://github.com/statnett/function-s3-user-arn/commit/f162c0fb2a166c4740b25bdb1d24caa8a9c28cfd))
+
 ## [1.0.9](https://github.com/statnett/function-s3-user-arn/compare/v1.0.8...v1.0.9) (2026-09-25)
 
 
