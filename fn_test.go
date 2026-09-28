@@ -16,7 +16,6 @@ import (
 )
 
 func TestRunFunction(t *testing.T) {
-
 	type args struct {
 		ctx context.Context
 		req *fnv1.RunFunctionRequest
@@ -85,7 +84,7 @@ func TestRunFunction(t *testing.T) {
 					Requirements: &fnv1.Requirements{
 						Resources: map[string]*fnv1.ResourceSelector{
 							"tenant account test": {
-								ApiVersion: "iam.aws.upbound.io/v1beta1",
+								ApiVersion: "iam.aws.m.upbound.io/v1beta1",
 								Kind:       "User",
 								Match: &fnv1.ResourceSelector_MatchLabels{
 									MatchLabels: &fnv1.MatchLabels{
@@ -146,7 +145,7 @@ func TestRunFunction(t *testing.T) {
 							Items: []*fnv1.Resource{
 								{
 									Resource: resource.MustStructJSON(`{
-										"apiVersion": "iam.aws.upbound.io/v1beta1",
+										"apiVersion": "iam.aws.m.upbound.io/v1beta1",
 										"kind": "User",
 										"metadata": {
 											"name": "test"
@@ -173,7 +172,7 @@ func TestRunFunction(t *testing.T) {
 						"s3-user-arn.fn.crossplane.io": {
 							"tenant account test": [
 								{
-									"apiVersion": "iam.aws.upbound.io/v1beta1",
+									"apiVersion": "iam.aws.m.upbound.io/v1beta1",
 									"kind": "User",
 									"metadata": {
 										"name": "test"
@@ -190,7 +189,7 @@ func TestRunFunction(t *testing.T) {
 					Requirements: &fnv1.Requirements{
 						Resources: map[string]*fnv1.ResourceSelector{
 							"tenant account test": {
-								ApiVersion: "iam.aws.upbound.io/v1beta1",
+								ApiVersion: "iam.aws.m.upbound.io/v1beta1",
 								Kind:       "User",
 								Match: &fnv1.ResourceSelector_MatchLabels{
 									MatchLabels: &fnv1.MatchLabels{
@@ -253,7 +252,7 @@ func TestRunFunction(t *testing.T) {
 							Items: []*fnv1.Resource{
 								{
 									Resource: resource.MustStructJSON(`{
-										"apiVersion": "iam.aws.upbound.io/v1beta1",
+										"apiVersion": "iam.aws.m.upbound.io/v1beta1",
 										"kind": "User",
 										"metadata": {
 											"name": "test"
@@ -280,7 +279,7 @@ func TestRunFunction(t *testing.T) {
 						"s3-user-arn.fn.crossplane.io": {
 							"foo bar baz": [
 								{
-									"apiVersion": "iam.aws.upbound.io/v1beta1",
+									"apiVersion": "iam.aws.m.upbound.io/v1beta1",
 									"kind": "User",
 									"metadata": {
 										"name": "test"
@@ -297,7 +296,7 @@ func TestRunFunction(t *testing.T) {
 					Requirements: &fnv1.Requirements{
 						Resources: map[string]*fnv1.ResourceSelector{
 							"foo bar baz": {
-								ApiVersion: "iam.aws.upbound.io/v1beta1",
+								ApiVersion: "iam.aws.m.upbound.io/v1beta1",
 								Kind:       "User",
 								Match: &fnv1.ResourceSelector_MatchLabels{
 									MatchLabels: &fnv1.MatchLabels{
