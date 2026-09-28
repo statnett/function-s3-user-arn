@@ -121,7 +121,7 @@ func buildRequirements(_ *v1alpha1.Input, xr *resource.Composite, context *struc
 
 					key := fmt.Sprintf("%s %s %s", tenant, account, user)
 					requiredResources[key] = &fnv1.ResourceSelector{
-						ApiVersion: "iam.aws.upbound.io/v1beta1",
+						ApiVersion: "iam.aws.m.upbound.io/v1beta1",
 						Kind:       "User",
 						Match: &fnv1.ResourceSelector_MatchLabels{
 							MatchLabels: &fnv1.MatchLabels{
