@@ -5,12 +5,7 @@
 
 ### ⚠ BREAKING CHANGES
 
-* fix readme title ([#114](https://github.com/statnett/function-s3-user-arn/issues/114))
-
-### Bug Fixes
-
 * use namespace scoped user for lookup ([#112](https://github.com/statnett/function-s3-user-arn/issues/112)) ([58a5696](https://github.com/statnett/function-s3-user-arn/commit/58a56967daddfedd7a11fdecb766084128adad2e))
-
 
 ### Documentation
 
