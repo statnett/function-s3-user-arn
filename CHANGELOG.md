@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.1](https://github.com/statnett/function-s3-user-arn/compare/v2.0.0...v2.0.1) (2026-10-21)
+
+
+### Bug Fixes
+
+* **deps:** update module sigs.k8s.io/controller-tools to v0.23.0 ([#120](https://github.com/statnett/function-s3-user-arn/issues/120)) ([3476c7f](https://github.com/statnett/function-s3-user-arn/commit/3476c7f75a26d6700fa7ba80fdfad7558ebc5c53))
+
 ## [2.0.0](https://github.com/statnett/function-s3-user-arn/compare/v1.0.9...v2.0.0) (2026-09-28)
 
 
